@@ -3,9 +3,7 @@ package com.example.cruddemo.rest;
 import com.example.cruddemo.dao.EmployeeDAO;
 import com.example.cruddemo.entity.Employee;
 import com.example.cruddemo.service.EmployeeService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -24,5 +22,24 @@ public class EmployeeRestController {
   @GetMapping("/employees")
   public List<Employee> findAll() {
     return employeeService.findAll();
+  }
+
+  // expose "/employees/{employeeId}" and return employee
+  @GetMapping("/employees/{employeeId}")
+  public Employee getEmployee(@PathVariable int employeeId) {
+    Employee employee = employeeService.findById(employeeId);
+    if (employee == null) {
+      throw new RuntimeException("Employee id not found - " + employeeId);
+    }
+    return employee;
+  }
+
+  // add mapping for post /employees - add new employee
+  @PostMapping("employees")
+  public Employee addEmployee(@RequestBody Employee employee) {
+    // force save of a new item if an id is posted
+    employee.setId(0);
+    Employee dbEmployee = employeeService.save(employee);
+    return dbEmployee;
   }
 }
