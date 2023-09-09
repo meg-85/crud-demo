@@ -1,11 +1,11 @@
 package com.example.cruddemo.rest;
 
-import com.example.cruddemo.dao.EmployeeDAO;
 import com.example.cruddemo.entity.Employee;
 import com.example.cruddemo.service.EmployeeService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -26,9 +26,9 @@ public class EmployeeRestController {
 
   // expose "/employees/{employeeId}" and return employee
   @GetMapping("/employees/{employeeId}")
-  public Employee getEmployee(@PathVariable int employeeId) {
-    Employee employee = employeeService.findById(employeeId);
-    if (employee == null) {
+  public Optional<Employee> getEmployee(@PathVariable int employeeId) {
+    Optional<Employee> employee = employeeService.findById(employeeId);
+    if (employee.isEmpty()) {
       throw new RuntimeException("Employee id not found - " + employeeId);
     }
     return employee;
@@ -51,10 +51,10 @@ public class EmployeeRestController {
   // add mapping for DELTE /employees - delete existing employee by id
   @DeleteMapping("/employees/{employeeId}")
   public String deleteEmployee(@PathVariable int employeeId) {
-    Employee tempEmployee = employeeService.findById(employeeId);
+    Optional<Employee> tempEmployee = employeeService.findById(employeeId);
 
     // throw exception if null
-    if (tempEmployee == null) {
+    if (tempEmployee.isEmpty()) {
       throw new RuntimeException("Employee id not found - " + employeeId);
     }
 
